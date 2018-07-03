@@ -37,10 +37,10 @@
 			let layersCount = 1;
 			let offset = 15;
 
-			//створюємо карти наступним чином, на кожному створеному канвасі буде одна карта
+			//creating cards, so we have more cards (amount of cards in previous column + 1) in each further column
 			for (let i = 0; i < values.length; i++) {
 				for (let j = 0; j < suits.length; j++) {
-					//створюємо новий канвас, що міситиме зображення карти
+					//creating a new canvas which will contain a card image
 					let subLayer = document.createElement('canvas');
 					let ctxSubLayer = subLayer.getContext('2d');
 
@@ -48,7 +48,7 @@
 					subLayer.setAttribute('id', 'sub-layer' + layersCount);
 					subLayer.setAttribute('name', 'cards/' + values[i] + suits[j] + '.png');
 
-					//додаємо можливість рухати карти
+					//lets make them move (drag'n'drop)
 					subLayer.onmousedown = function () {
 						let coords = subLayer.getBoundingClientRect();
 						let shiftX = event.pageX - coords.left;
@@ -64,7 +64,7 @@
 							subLayer.onmousedup = null;
 						}					
 					}
-
+					//flip the card
 					subLayer.onclick = function () {
 						subLayer.style.transition = '1s';
 						subLayer.style.transform = 'rotateY(360deg)';
@@ -82,7 +82,7 @@
 					subLayer.style.left = offset + 'px';
 					document.body.appendChild(subLayer);
 
-					//малюємо на новому канвасі карту
+					//drawing card image on canvas
 					let image = new Image();
 					image.src = 'cards/back.png';
 					image.onload = function () {
@@ -95,12 +95,14 @@
 			}
 		}
 
-		//функція, що рухає карту
+		//a function, that moves cards 
+		//takes as arguments a card that should be moved, and an offset on x and y axis
 		function moveCard(card, x, y) {
 			let style = window.getComputedStyle(card);
 			let left = parseInt(style.getPropertyValue('left'));
 			let top = parseInt(style.getPropertyValue('top'));
-
+			//we multiplicate these values because we calculate the position of a card
+			//according to its indexes in cards array
 			let finalX = y * 200 + 340;
 			let finalY = x * 50 + 150;
 
@@ -143,17 +145,10 @@
 			let canvasMain = document.getElementById('main-layer-canvas');
 			let ctxMain = canvasMain.getContext('2d');
 
-			//місце для тузів
-			ctxMain.strokeRect(540, 150, 90, 130);
-			ctxMain.strokeRect(740, 150, 90, 130);
-			ctxMain.strokeRect(940, 150, 90, 130);
-			ctxMain.strokeRect(1040, 150, 90, 130);
-
-			//створюємо карти
 			createCards();
 			let i, j;
 
-			//розташовуємо карти у таблицю за зростанням
+			//set the cards in a triangle table ascendingly
 			for (i = 0; i < 7; i++) {
 				j = amount;
 				while (j < 6) {
@@ -163,7 +158,7 @@
 				}
 				amount++;
 			}
-			//рухаємо карти
+			//moving cards to their start positions
 			for (i = 0; i < 7; i++) {
 				for (j = 0; j < 6; j++) {
 					if (cardsTable[i][j] != undefined) {
@@ -174,14 +169,14 @@
 
 			for (i = 0; i < 7; i++) {
 				for (j = 0; j < 6; j++) {
-					//якщо ми на останній знизу карті
+					//if we are at least card from bottom
 					if (cardsTable[i][j] != undefined && cardsTable[i][j - 1] === undefined) {
-						//то перевернімо її догори
+						//flip it
 						flipHorizontally(cardsTable[i][j]);
 					}
 				}
 			}
-			//додаємо карти до прикупу
+			//we should have some more additional cards for our game
 			let temp = 1;
 			for (i = 22; i < 30; i++) {
 				let card = document.getElementById('sub-layer' + i);
